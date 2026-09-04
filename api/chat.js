@@ -131,9 +131,19 @@ export default async function handler(req, res) {
     }
 
     const data = await upstream.json();
-    const text = String(data.output_text || "").trim();
+
+    // `output_text` is an SDK convenience field and is not guaranteed in raw REST JSON.
+    // Extract assistant text from the Responses API output array.
+    const text = (Array.isArray(data.output) ? data.output : [])
+      .filter((item) => item && item.type === "message" && item.role === "assistant")
+      .flatMap((item) => Array.isArray(item.content) ? item.content : [])
+      .filter((part) => part && part.type === "output_text")
+      .map((part) => part.text || "")
+      .join("")
+      .trim();
 
     if (!text) {
+      console.error("OpenAI returned no assistant text", JSON.stringify(data).slice(0, 2000));
       return res.status(502).json({ error: "upstream_error" });
     }
 
