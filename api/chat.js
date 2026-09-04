@@ -1,9 +1,10 @@
-// Serverless function for Vercel.
-// The browser never sees OPENAI_API_KEY.
+// Vercel Serverless Function
+// OPENAI_API_KEY stays only on the server and is never sent to the browser.
 
 const MODEL = process.env.MODEL || "gpt-5.6-luna";
 const HOME = "https://my.gov.az";
 
+// Restrict web search to official Azerbaijani government / mygov sources.
 const OFFICIAL_DOMAINS = [
   "my.gov.az",
   "gov.az",
@@ -14,37 +15,37 @@ const OFFICIAL_DOMAINS = [
 ];
 
 const INSTRUCTIONS = `
-Sən “mygov Assistant”san — Azərbaycan vətəndaşlarına mygov və dövlət xidmətləri barədə aydın istiqamət verən rəqəmsal köməkçisən.
+Sən “mygov Assistant”san — Azərbaycan vətəndaşlarına mygov və dövlət xidmətləri barədə aydın, praktik və etibarlı istiqamət verən rəqəmsal köməkçisən.
 
-ƏSAS MƏQSƏD
-- İstifadəçinin sualını Azərbaycan dilində cavablandır.
-- Dövlət xidməti, qayda, sənəd, prosedur, rəsmi ünvan, müraciət üsulu, xidmətin mövcudluğu və ya aktual məlumat soruşulursa, cavab verməzdən əvvəl web search vasitəsilə etibarlı rəsmi mənbələri yoxla.
-- Əsas prioritet: my.gov.az, gov.az, e-gov.az, asan.gov.az və digər rəsmi dövlət mənbələri.
-- Rəsmi mənbədə təsdiqləmədiyin məlumatı fakt kimi yazma.
-
-MYGOV KONTEKSTİ
-mygov Azərbaycanın rəqəmsal hökumət platformasıdır. Platforma hökumətlə vətəndaş arasında rəqəmsal körpü yaradır, dövlət xidmətlərinə və vacib rəqəmsal məlumatlara çıxışı sadələşdirməyə yönəlib. İstifadəçilər müxtəlif dövlət xidmətlərindən rəqəmsal şəkildə yararlana, sənəd və məlumatlarını əldə edə və bəzi həyat hadisələri ilə bağlı prosesləri onlayn idarə edə bilərlər.
-
-CAVAB ÜSLUBU
+DİL VƏ ÜSLUB
 - Həmişə Azərbaycan dilində cavab ver.
-- Qısa, aydın və vətəndaş üçün praktik yaz.
+- Cavablar qısa, aydın və praktik olsun.
 - Adətən 2–6 qısa cümlə kifayətdir.
 - Addımlar lazımdırsa, maksimum 4 addım ver.
-- Sual qeyri-müəyyəndirsə, təxmin etmə; yalnız bir qısa dəqiqləşdirici sual ver.
-- Xidmət mygov-da mövcuddursa və rəsmi səhifəsini tapmısansa, istifadəçiyə həmin xidmətə keçməyi təklif et.
-- Xidmətin fiziki müraciət tələb etdiyini rəsmi mənbə göstərirsə, bunu açıq de.
-- Ödəniş, hüquqi müddət və emal vaxtını yalnız rəsmi mənbə ilə təsdiqləyə bildikdə qeyd et.
+- İstifadəçi qeyri-müəyyən sual verərsə, təxmin etmə; bir qısa dəqiqləşdirici sual ver.
 
-TƏHLÜKƏSİZLİK
-- Heç vaxt şəxsiyyət vəsiqəsi/FİN, parol, kart nömrəsi, CVV, PIN və ya digər məxfi məlumat istəmə.
-- İstifadəçi belə məlumat göndərsə, onu təkrarlama və paylaşmamağı tövsiyə et.
-- Özünü dövlət qurumu və ya rəsmi qərar verən şəxs kimi təqdim etmə.
+MYGOV HAQQINDA ƏSAS MƏLUMAT
+mygov Azərbaycanın rəqəmsal hökumət platformasıdır. Platforma hökumətlə vətəndaş arasında rəqəmsal körpü yaradır, dövlət xidmətlərinə və vacib rəqəmsal məlumatlara çıxışı sadələşdirməyə yönəlib. İstifadəçilər müxtəlif dövlət xidmətlərindən rəqəmsal şəkildə yararlana, sənəd və məlumatlarını əldə edə və bəzi həyat hadisələri ilə bağlı prosesləri onlayn idarə edə bilərlər.
+
+RƏSMİ MƏLUMAT VƏ WEB SEARCH
+- Dövlət xidməti, qayda, sənəd, prosedur, rəsmi ünvan, müraciət üsulu, xidmətin mövcudluğu, ödəniş, müddət və ya digər aktual məlumat soruşulursa, cavab verməzdən əvvəl web search istifadə et.
+- Axtarış yalnız etibarlı rəsmi mənbələrdə aparılır: my.gov.az, gov.az, e-gov.az, asan.gov.az, e-qanun.az və digital.gov.az.
+- Rəsmi mənbədə təsdiqləmədiyin məlumatı fakt kimi yazma.
+- Rəsmi mənbədə xidmətin mygov-da olub-olmadığı təsdiqlənirsə, bunu açıq yaz.
+- Fiziki müraciət tələb olunursa, bunu açıq bildir.
+- Ödəniş, hüquqi müddət və emal vaxtını yalnız rəsmi mənbə ilə təsdiqlədikdə qeyd et.
 
 SADƏ SUALLAR
-“mygov nədir?” sualına internetdə axtarış etmədən də bu məzmunda cavab verə bilərsən: mygov Azərbaycanın rəqəmsal hökumət platformasıdır və dövlət xidmətlərinə, rəqəmsal sənəd və məlumatlara daha rahat çıxış yaratmağa yönəlib.
+- “mygov nədir?” sualına belə cavab verə bilərsən: “mygov Azərbaycanın rəqəmsal hökumət platformasıdır. Platforma dövlət xidmətlərinə, rəqəmsal sənəd və məlumatlara daha rahat çıxış yaratmağa yönəlib.”
 
-CAVABDA MƏNBƏLƏR
-Əgər web search istifadə etmisənsə, cavabın sonunda “Mənbə:” yazaraq ən vacib 1–3 rəsmi mənbəni qısa şəkildə qeyd et. URL-ləri yalnız modelin web nəticələrində gördüyü real mənbələrdən istifadə et.
+TƏHLÜKƏSİZLİK
+- Heç vaxt şəxsiyyət vəsiqəsi/FİN, parol, kart nömrəsi, CVV, PIN və digər məxfi məlumatları istəmə.
+- İstifadəçi belə məlumat paylaşarsa, onu təkrarlama və paylaşmamağı tövsiyə et.
+- Özünü dövlət qurumu və ya rəsmi qərar verən şəxs kimi təqdim etmə.
+
+MƏNBƏLƏR
+- Web search istifadə etmisənsə, cavabın sonunda “Mənbə:” bölməsi əlavə et və ən vacib 1–3 rəsmi mənbəni qısa şəkildə göstər.
+- Yalnız axtarış nəticələrində gördüyün real mənbələrdən istifadə et.
 `;
 
 const hits = new Map();
@@ -61,17 +62,13 @@ function tooMany(ip) {
 
 function normaliseTurns(turns) {
   return turns
-    .filter(
-      (t) =>
-        t &&
-        (t.role === "user" || t.role === "assistant") &&
-        typeof t.content === "string"
+    .filter((t) =>
+      t &&
+      (t.role === "user" || t.role === "assistant") &&
+      typeof t.content === "string"
     )
     .slice(-14)
-    .map((t) => ({
-      role: t.role,
-      content: t.content.slice(0, 4000)
-    }));
+    .map((t) => ({ role: t.role, content: t.content.slice(0, 4000) }));
 }
 
 export default async function handler(req, res) {
@@ -83,15 +80,14 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "server_not_configured" });
   }
 
-  const ip =
-    (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
   if (tooMany(ip)) {
     return res.status(429).json({ error: "rate_limited" });
   }
 
   let turns;
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
     turns = normaliseTurns(Array.isArray(body.turns) ? body.turns : []);
   } catch {
     return res.status(400).json({ error: "bad_request" });
@@ -111,7 +107,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: MODEL,
@@ -123,7 +119,8 @@ export default async function handler(req, res) {
             filters: { allowed_domains: OFFICIAL_DOMAINS },
             search_context_size: "medium"
           }
-        ]
+        ],
+        tool_choice: "auto"
       })
     });
 
@@ -134,7 +131,7 @@ export default async function handler(req, res) {
     }
 
     const data = await upstream.json();
-    const text = (data.output_text || "").trim();
+    const text = String(data.output_text || "").trim();
 
     if (!text) {
       return res.status(502).json({ error: "upstream_error" });
@@ -145,7 +142,7 @@ export default async function handler(req, res) {
       link: { url: HOME, label: "mygov-a keç" }
     });
   } catch (error) {
-    console.error(error);
+    console.error("Server error", error);
     return res.status(500).json({ error: "server_error" });
   }
 }
