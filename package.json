@@ -1,0 +1,6 @@
+{
+  "name": "mygov-assistant-prototype",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" }
+}

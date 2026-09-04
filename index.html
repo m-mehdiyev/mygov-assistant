@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mygov Assistant</title>
+<meta name="description" content="Ask about any government service in your own words. A prototype guidance assistant for mygov.">
+
+<!-- Link preview (WhatsApp, Telegram, Slack, LinkedIn). Replace the image URL
+     with a real 1200x630 PNG hosted at /preview.png once you add one. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="mygov">
+<meta property="og:title" content="mygov Assistant">
+<meta property="og:description" content="Ask about any government service in your own words — the assistant tells you whether you can do it from your phone, and how.">
+<meta property="og:image" content="/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="mygov Assistant">
+<meta name="twitter:description" content="Ask about any government service in your own words.">
+<meta name="twitter:image" content="/preview.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#E6E4DF; --ink-3:#7A807A; --line:#D6D3CC;
+  --wa-head:#075E54; --wa-bg:#EAE1D8; --wa-in:#FFFFFF; --wa-out:#D6F5C8;
+  --wa-ink:#111B21; --wa-meta:#667781; --wa-green:#1DA851;
+  --chip:#FFFFFF; --chip-ink:#0B6FA4; --chip-line:#CFE3EE;
+  --shadow:0 2px 6px rgba(20,26,22,.07),0 18px 48px rgba(20,26,22,.13);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#15181A; --ink-3:#818885; --line:#31373A;
+    --wa-head:#1F2C33; --wa-bg:#0B141A; --wa-in:#1F2C33; --wa-out:#005C4B;
+    --wa-ink:#E9EDEF; --wa-meta:#8696A0; --wa-green:#25D366;
+    --chip:#1F2C33; --chip-ink:#53BDEB; --chip-line:#2A3942;
+    --shadow:0 2px 6px rgba(0,0,0,.4),0 18px 48px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#15181A; --ink-3:#818885; --line:#31373A;
+  --wa-head:#1F2C33; --wa-bg:#0B141A; --wa-in:#1F2C33; --wa-out:#005C4B;
+  --wa-ink:#E9EDEF; --wa-meta:#8696A0; --wa-green:#25D366;
+  --chip:#1F2C33; --chip-ink:#53BDEB; --chip-line:#2A3942;
+  --shadow:0 2px 6px rgba(0,0,0,.4),0 18px 48px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--wa-ink);
+  font-family:Archivo,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:20px 14px 16px}
+
+.phone{background:#0F1417;border-radius:32px;padding:9px;box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.07);width:100%;max-width:392px}
+.screen{border-radius:25px;overflow:hidden;background:var(--wa-bg);display:flex;flex-direction:column;
+  height:min(78vh,720px);min-height:460px}
+.wa-top{background:var(--wa-head);color:#fff;padding:11px 14px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.ava{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;flex-shrink:0;overflow:hidden}
+.ava svg{width:40px;height:40px}
+.wa-name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:5px}
+.verified{width:13px;height:13px;flex-shrink:0}
+.wa-status{font-size:11.5px;opacity:.72;margin-top:1px}
+
+.thread{flex:1;overflow-y:auto;padding:15px 12px 12px;display:flex;flex-direction:column;gap:7px;
+  background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.045) 1px,transparent 0);background-size:18px 18px}
+.row{display:flex;gap:6px;align-items:flex-end;max-width:89%}
+.row.out{align-self:flex-end}
+.row.in{align-self:flex-start}
+.mini{width:22px;height:22px;border-radius:50%;background:#fff;flex-shrink:0;overflow:hidden;
+  box-shadow:0 1px 2px rgba(11,20,26,.18)}
+.mini svg{width:22px;height:22px}
+.msg{padding:7px 10px 6px;border-radius:9px;font-size:13.6px;line-height:1.46;color:var(--wa-ink);
+  box-shadow:0 1px .5px rgba(11,20,26,.13);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;
+  white-space:pre-line;animation:pop .2s ease-out;overflow-wrap:break-word;min-width:0}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.msg{animation:none}}
+.row.in .msg{background:var(--wa-in);border-top-left-radius:2px}
+.row.out .msg{background:var(--wa-out);border-top-right-radius:2px}
+.msg b{font-weight:600}
+.tstamp{font-size:10px;color:var(--wa-meta);float:right;margin:6px 0 -2px 9px}
+
+.golink{display:flex;align-items:center;gap:8px;margin-top:9px;padding:9px 11px;border-radius:8px;
+  background:var(--chip);border:1px solid var(--chip-line);color:var(--chip-ink);
+  text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.35}
+.golink:hover{filter:brightness(.97);text-decoration:underline}
+.golink:focus-visible{outline:2px solid var(--wa-green);outline-offset:2px}
+.golink svg{flex-shrink:0}
+
+.typing{align-self:flex-start;background:var(--wa-in);border-radius:9px;border-top-left-radius:2px;
+  padding:11px 13px;display:flex;gap:4px;box-shadow:0 1px .5px rgba(11,20,26,.13);margin-left:28px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--wa-meta);animation:bl 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.16s}.typing i:nth-child(3){animation-delay:.32s}
+@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+
+.wa-bar{background:var(--wa-in);padding:9px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;
+  border-top:1px solid rgba(0,0,0,.07)}
+#box{flex:1;background:var(--wa-bg);border:none;border-radius:18px;padding:10px 14px;font-size:13px;
+  color:var(--wa-ink);font-family:inherit;min-width:0}
+#box:focus{outline:2px solid var(--wa-green);outline-offset:-1px}
+#box::placeholder{color:var(--wa-meta)}
+#send{width:35px;height:35px;border-radius:50%;background:var(--wa-green);display:grid;place-items:center;
+  flex-shrink:0;border:none;cursor:pointer}
+#send:disabled{opacity:.45;cursor:default}
+#send:focus-visible{outline:2px solid var(--chip-ink);outline-offset:2px}
+
+.foot{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  text-align:center;flex-shrink:0}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screen">
+    <div class="wa-top">
+      <div class="ava" id="ava"></div>
+      <div>
+        <div class="wa-name">mygov Assistant
+          <svg class="verified" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12 2l2.2 2.1 3-.4 1 2.9 2.7 1.4-1 2.9 1 2.9-2.7 1.4-1 2.9-3-.4L12 22l-2.2-2.1-3 .4-1-2.9L3.1 16l1-2.9-1-2.9L6.8 8.8l1-2.9 3 .4z"/><path d="M10.6 15.3l-2.9-2.9 1.1-1.1 1.8 1.8 4-4 1.1 1.1z" fill="#075E54"/></svg>
+        </div>
+        <div class="wa-status" id="status">online</div>
+      </div>
+    </div>
+    <div class="thread" id="thread" aria-live="polite"></div>
+    <form class="wa-bar" id="form">
+      <input id="box" autocomplete="off" placeholder="Ask anything about a government service">
+      <button id="send" type="submit" aria-label="Send">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+<div class="foot">Prototype · not a live government service</div>
+<script src="/app.js"></script>
+</body>
+</html>
