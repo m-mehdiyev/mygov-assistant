@@ -1,6 +1,6 @@
 // Front end. Talks to /api/chat — never to a model directly, and holds no key.
 
-const LOGO = '<svg viewBox="0 0 64 64" role="img" aria-label="mygov"><rect width="64" height="64" rx="14" fill="#0B6FA4"/><text x="32" y="39" font-family="Archivo,Arial,sans-serif" font-size="19" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing="-0.5">mygov</text></svg>';
+const LOGO = '<img src="/mygovaz_logo.jpeg" alt="mygov">';
 // ^ Placeholder wordmark. Replace this whole string with the real mygov SVG
 //   (or swap the .ava / .mini contents for an <img src="/logo.svg">).
 
@@ -99,10 +99,10 @@ async function ask(text) {
 
     if (!r.ok) {
       const msg = {
-        rate_limited: 'A lot of messages at once — give it a moment and ask again.',
-        server_not_configured: 'This demo is not finished being set up yet.',
-        upstream_error: 'I could not reach the assistant just now. Try again.',
-      }[data.error] || 'Something went wrong. Try again.';
+        rate_limited: 'Çox qısa vaxtda çoxlu mesaj göndərildi. Bir az sonra yenidən cəhd edin.',
+        server_not_configured: 'Assistant hələ tam konfiqurasiya edilməyib.',
+        upstream_error: 'Hazırda assistant-a qoşulmaq mümkün olmadı. Yenidən cəhd edin.',
+      }[data.error] || 'Xəta baş verdi. Yenidən cəhd edin.';
       stamp(row('in'), msg, null);
       return;
     }
@@ -111,7 +111,7 @@ async function ask(text) {
     turns.push({ role: 'assistant', content: data.text || '' });
   } catch (e) {
     typingOff();
-    stamp(row('in'), 'Connection lost. Check your network and try again.', null);
+    stamp(row('in'), 'Bağlantı kəsildi. İnternet bağlantınızı yoxlayıb yenidən cəhd edin.', null);
   } finally {
     typingOff();
     busy = false;
@@ -129,7 +129,7 @@ form.addEventListener('submit', (e) => {
 
 stamp(
   row('in'),
-  "Salam! I'm the mygov Assistant.\n\nTell me what you need — a document, a payment, something you're not even sure the state does online — and I'll tell you whether you can do it from your phone, and exactly how.\n\nTry me: “the electricity bill is still in the old owner's name”, or “do I have to go to ASAN for a criminal record certificate?”",
+  "Salam! Mən mygov Assistant-am.\n\nmygov və dövlət xidmətləri ilə bağlı suallarınızı sadə dildə verə bilərsiniz. Mövcud məlumatlara əsasən sizə qısa və aydın istiqamət verəcəyəm.\n\nMəsələn: “mygov nədir?” və ya “mygov-da nə edə bilərəm?”",
   null
 );
 box.focus();

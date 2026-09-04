@@ -1,134 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>mygov Assistant</title>
-<meta name="description" content="Ask about any government service in your own words. A prototype guidance assistant for mygov.">
-
-<!-- Link preview (WhatsApp, Telegram, Slack, LinkedIn). Replace the image URL
-     with a real 1200x630 PNG hosted at /preview.png once you add one. -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="mygov">
-<meta property="og:title" content="mygov Assistant">
-<meta property="og:description" content="Ask about any government service in your own words — the assistant tells you whether you can do it from your phone, and how.">
-<meta property="og:image" content="/preview.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="mygov Assistant">
-<meta name="twitter:description" content="Ask about any government service in your own words.">
-<meta name="twitter:image" content="/preview.png">
+<meta name="description" content="mygov haqqında suallarınıza sadə və aydın cavablar.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-:root{
-  --ground:#E6E4DF; --ink-3:#7A807A; --line:#D6D3CC;
-  --wa-head:#075E54; --wa-bg:#EAE1D8; --wa-in:#FFFFFF; --wa-out:#D6F5C8;
-  --wa-ink:#111B21; --wa-meta:#667781; --wa-green:#1DA851;
-  --chip:#FFFFFF; --chip-ink:#0B6FA4; --chip-line:#CFE3EE;
-  --shadow:0 2px 6px rgba(20,26,22,.07),0 18px 48px rgba(20,26,22,.13);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --ground:#15181A; --ink-3:#818885; --line:#31373A;
-    --wa-head:#1F2C33; --wa-bg:#0B141A; --wa-in:#1F2C33; --wa-out:#005C4B;
-    --wa-ink:#E9EDEF; --wa-meta:#8696A0; --wa-green:#25D366;
-    --chip:#1F2C33; --chip-ink:#53BDEB; --chip-line:#2A3942;
-    --shadow:0 2px 6px rgba(0,0,0,.4),0 18px 48px rgba(0,0,0,.5);
-  }
-}
-:root[data-theme="dark"]{
-  --ground:#15181A; --ink-3:#818885; --line:#31373A;
-  --wa-head:#1F2C33; --wa-bg:#0B141A; --wa-in:#1F2C33; --wa-out:#005C4B;
-  --wa-ink:#E9EDEF; --wa-meta:#8696A0; --wa-green:#25D366;
-  --chip:#1F2C33; --chip-ink:#53BDEB; --chip-line:#2A3942;
-  --shadow:0 2px 6px rgba(0,0,0,.4),0 18px 48px rgba(0,0,0,.5);
-}
-*{box-sizing:border-box}
-body{background:var(--ground);color:var(--wa-ink);
-  font-family:Archivo,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;padding:20px 14px 16px}
-
-.phone{background:#0F1417;border-radius:32px;padding:9px;box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.07);width:100%;max-width:392px}
-.screen{border-radius:25px;overflow:hidden;background:var(--wa-bg);display:flex;flex-direction:column;
-  height:min(78vh,720px);min-height:460px}
-.wa-top{background:var(--wa-head);color:#fff;padding:11px 14px;display:flex;align-items:center;gap:11px;flex-shrink:0}
-.ava{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;flex-shrink:0;overflow:hidden}
-.ava svg{width:40px;height:40px}
-.wa-name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:5px}
-.verified{width:13px;height:13px;flex-shrink:0}
-.wa-status{font-size:11.5px;opacity:.72;margin-top:1px}
-
-.thread{flex:1;overflow-y:auto;padding:15px 12px 12px;display:flex;flex-direction:column;gap:7px;
-  background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.045) 1px,transparent 0);background-size:18px 18px}
-.row{display:flex;gap:6px;align-items:flex-end;max-width:89%}
-.row.out{align-self:flex-end}
-.row.in{align-self:flex-start}
-.mini{width:22px;height:22px;border-radius:50%;background:#fff;flex-shrink:0;overflow:hidden;
-  box-shadow:0 1px 2px rgba(11,20,26,.18)}
-.mini svg{width:22px;height:22px}
-.msg{padding:7px 10px 6px;border-radius:9px;font-size:13.6px;line-height:1.46;color:var(--wa-ink);
-  box-shadow:0 1px .5px rgba(11,20,26,.13);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;
-  white-space:pre-line;animation:pop .2s ease-out;overflow-wrap:break-word;min-width:0}
-@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.msg{animation:none}}
-.row.in .msg{background:var(--wa-in);border-top-left-radius:2px}
-.row.out .msg{background:var(--wa-out);border-top-right-radius:2px}
-.msg b{font-weight:600}
-.tstamp{font-size:10px;color:var(--wa-meta);float:right;margin:6px 0 -2px 9px}
-
-.golink{display:flex;align-items:center;gap:8px;margin-top:9px;padding:9px 11px;border-radius:8px;
-  background:var(--chip);border:1px solid var(--chip-line);color:var(--chip-ink);
-  text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.35}
-.golink:hover{filter:brightness(.97);text-decoration:underline}
-.golink:focus-visible{outline:2px solid var(--wa-green);outline-offset:2px}
-.golink svg{flex-shrink:0}
-
-.typing{align-self:flex-start;background:var(--wa-in);border-radius:9px;border-top-left-radius:2px;
-  padding:11px 13px;display:flex;gap:4px;box-shadow:0 1px .5px rgba(11,20,26,.13);margin-left:28px}
-.typing i{width:6px;height:6px;border-radius:50%;background:var(--wa-meta);animation:bl 1.1s infinite}
-.typing i:nth-child(2){animation-delay:.16s}.typing i:nth-child(3){animation-delay:.32s}
-@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
-
-.wa-bar{background:var(--wa-in);padding:9px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;
-  border-top:1px solid rgba(0,0,0,.07)}
-#box{flex:1;background:var(--wa-bg);border:none;border-radius:18px;padding:10px 14px;font-size:13px;
-  color:var(--wa-ink);font-family:inherit;min-width:0}
-#box:focus{outline:2px solid var(--wa-green);outline-offset:-1px}
-#box::placeholder{color:var(--wa-meta)}
-#send{width:35px;height:35px;border-radius:50%;background:var(--wa-green);display:grid;place-items:center;
-  flex-shrink:0;border:none;cursor:pointer}
-#send:disabled{opacity:.45;cursor:default}
-#send:focus-visible{outline:2px solid var(--chip-ink);outline-offset:2px}
-
-.foot{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
-  text-align:center;flex-shrink:0}
+:root{--bg:#eef1f5;--ink:#101828;--muted:#667085;--line:#e4e7ec;--head:#ffffff;--chat:#f6f7f9;--in:#fff;--out:#e9f2ff;--accent:#4d82c5;--shadow:0 28px 80px rgba(15,23,42,.20)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh;background:radial-gradient(circle at top,#fff 0,#eef1f5 48%,#e6e9ee 100%);display:grid;place-items:center;padding:24px;color:var(--ink)}
+.phone{width:min(100%,430px);height:min(860px,calc(100vh - 48px));min-height:600px;background:#101010;border:8px solid #151515;border-radius:54px;padding:7px;box-shadow:var(--shadow);position:relative}
+.phone:before{content:"";position:absolute;top:13px;left:50%;transform:translateX(-50%);width:126px;height:32px;background:#000;border-radius:20px;z-index:4}
+.screen{height:100%;border-radius:43px;overflow:hidden;background:var(--chat);display:flex;flex-direction:column;position:relative}
+.wa-top{padding:54px 18px 15px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;flex-shrink:0}
+.ava{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;border:1px solid #eef0f2}.ava img,.mini img{width:100%;height:100%;object-fit:cover}
+.wa-name{font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}.verified{width:15px;height:15px}.wa-status{font-size:11px;color:var(--muted);margin-top:2px}
+.thread{flex:1;overflow-y:auto;padding:18px 14px 16px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(#f8fafc,#f4f6f8)}
+.row{display:flex;gap:7px;align-items:flex-end;max-width:88%}.row.out{align-self:flex-end}.row.in{align-self:flex-start}.mini{width:24px;height:24px;border-radius:50%;overflow:hidden;background:#fff;flex-shrink:0;border:1px solid var(--line)}
+.msg{padding:11px 13px 8px;border-radius:20px;font-size:13.5px;line-height:1.5;box-shadow:0 1px 2px rgba(16,24,40,.05);white-space:pre-line;overflow-wrap:anywhere}.row.in .msg{background:var(--in);border-bottom-left-radius:5px}.row.out .msg{background:var(--out);border-bottom-right-radius:5px}.msg b{font-weight:700}.tstamp{font-size:9.5px;color:#98a2b3;float:right;margin:6px 0 -2px 9px}
+.golink{display:flex;align-items:center;gap:8px;margin-top:9px;padding:10px 12px;border-radius:13px;background:#fff;border:1px solid #dbe7f5;color:#346cae;text-decoration:none;font-size:12px;font-weight:700}.golink:hover{text-decoration:underline}
+.typing{align-self:flex-start;background:#fff;border-radius:18px;border-bottom-left-radius:5px;padding:12px 14px;display:flex;gap:5px;margin-left:31px}.typing i{width:6px;height:6px;border-radius:50%;background:#98a2b3;animation:bl 1.1s infinite}.typing i:nth-child(2){animation-delay:.16s}.typing i:nth-child(3){animation-delay:.32s}@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.wa-bar{padding:10px 12px max(12px,env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(18px);display:flex;gap:8px;border-top:1px solid var(--line);flex-shrink:0}.input-wrap{flex:1;background:#f2f4f7;border-radius:24px;display:flex;align-items:center;padding-left:14px}#box{width:100%;border:0;outline:0;background:transparent;padding:12px 8px;font-size:13.5px;color:var(--ink);font-family:inherit}#box::placeholder{color:#98a2b3}#send{width:44px;height:44px;border:0;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px rgba(77,130,197,.30)}#send:disabled{opacity:.45}.foot{display:none}
+@media(max-width:520px){body{padding:0;background:#fff}.phone{width:100%;height:100vh;min-height:100vh;border:0;border-radius:0;padding:0;box-shadow:none}.phone:before{top:8px}.screen{border-radius:0}.wa-top{padding-top:48px}}
 </style>
-<style>body{margin:0}</style>
 </head>
 <body>
-<div class="phone">
-  <div class="screen">
-    <div class="wa-top">
-      <div class="ava" id="ava"></div>
-      <div>
-        <div class="wa-name">mygov Assistant
-          <svg class="verified" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12 2l2.2 2.1 3-.4 1 2.9 2.7 1.4-1 2.9 1 2.9-2.7 1.4-1 2.9-3-.4L12 22l-2.2-2.1-3 .4-1-2.9L3.1 16l1-2.9-1-2.9L6.8 8.8l1-2.9 3 .4z"/><path d="M10.6 15.3l-2.9-2.9 1.1-1.1 1.8 1.8 4-4 1.1 1.1z" fill="#075E54"/></svg>
-        </div>
-        <div class="wa-status" id="status">online</div>
-      </div>
-    </div>
-    <div class="thread" id="thread" aria-live="polite"></div>
-    <form class="wa-bar" id="form">
-      <input id="box" autocomplete="off" placeholder="Ask anything about a government service">
-      <button id="send" type="submit" aria-label="Send">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-      </button>
-    </form>
-  </div>
-</div>
-<div class="foot">Prototype · not a live government service</div>
+<div class="phone"><div class="screen">
+<div class="wa-top"><div class="ava" id="ava"></div><div><div class="wa-name">mygov Assistant <svg class="verified" viewBox="0 0 24 24" fill="#4d82c5" aria-hidden="true"><path d="M12 2l2.2 2.1 3-.4 1 2.9 2.7 1.4-1 2.9 1 2.9-2.7 1.4-1 2.9-3-.4L12 22l-2.2-2.1-3 .4-1-2.9L3.1 16l1-2.9-1-2.9L6.8 8.8l1-2.9 3 .4z"/></svg></div><div class="wa-status" id="status">onlayn</div></div></div>
+<div class="thread" id="thread" aria-live="polite"></div>
+<form class="wa-bar" id="form"><div class="input-wrap"><input id="box" autocomplete="off" placeholder="mygov haqqında sualınızı yazın..."></div><button id="send" type="submit" aria-label="Göndər"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg></button></form>
+</div></div>
+<div class="foot">mygov Assistant</div>
 <script src="/app.js"></script>
-</body>
-</html>
+</body></html>
