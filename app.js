@@ -1,8 +1,7 @@
 // Front end. Talks to /api/chat — never to a model directly, and holds no key.
 
 const LOGO = '<img src="/mygovaz_logo.jpeg" alt="mygov">';
-// ^ Placeholder wordmark. Replace this whole string with the real mygov SVG
-//   (or swap the .ava / .mini contents for an <img src="/logo.svg">).
+// Supplied mygov logo is used for the assistant avatar.
 
 const thread = document.getElementById('thread');
 const status = document.getElementById('status');
